@@ -13,6 +13,10 @@ class Program
             name: "url",
             description: "The URL for the get command");
 
+        var bodyOption = new Option<string>(
+            name: "--body",
+            description: "Add a custom body for the HTTP POST/PUT request");
+
         // ----- GET COMMAND -------
         var getCommand = new Command(
             name: "get",
@@ -22,7 +26,7 @@ class Program
 
         getCommand.SetHandler(async (url) =>
             {
-                var response = await HttpCaller(HttpRequestType.GET, url);
+                var response = await HttpCaller(HttpRequestType.Get, url);
                 if (response)
                 {
                     response.Print();
@@ -41,16 +45,12 @@ class Program
             name: "post",
             description: "Sends a HTTP POST request to the given URL.");
 
-        var bodyOption = new Option<string>(
-            name: "--body",
-            description: "Add a custom body for the HTTP POST request");
-
         postCommand.Add(mainUrl);
         postCommand.Add(bodyOption);
 
         postCommand.SetHandler(async (url, body) =>
             {
-                var response = await HttpCaller(HttpRequestType.POST, url, body);
+                var response = await HttpCaller(HttpRequestType.Post, url, body);
 
                 if (response)
                 {
@@ -76,7 +76,7 @@ class Program
 
         deleteCommand.SetHandler(async (url) =>
             {
-                var response = await HttpCaller(HttpRequestType.DELETE, url);
+                var response = await HttpCaller(HttpRequestType.Delete, url);
                 if (response)
                 {
                     response.Print();
@@ -89,13 +89,34 @@ class Program
             symbol: mainUrl
         );
         // ------ PUT COMMAND ------
+        var putCommand = new Command(
+            name: "put",
+            description: "Sends a HTTP PUT request to the given URL.");
 
+        putCommand.Add(mainUrl);
+        putCommand.Add(bodyOption);
+        putCommand.SetHandler(async (url, body) =>
+            {
+                var response = await HttpCaller(HttpRequestType.Put, url, body);
 
+                if (response)
+                {
+                    response.Print();
+                }
+                else
+                {
+                    response.PrintException();
+                }
+            },
+            symbol1: mainUrl,
+            symbol2: bodyOption
+        );
         // ------ ROOT COMMAND ------
         var rootCommand = new RootCommand("An API Tool for testing API's in development");
         rootCommand.Add(getCommand);
         rootCommand.Add(postCommand);
         rootCommand.Add(deleteCommand);
+        rootCommand.Add(putCommand);
 
         await rootCommand.InvokeAsync(args);
 
@@ -105,10 +126,10 @@ class Program
 
     private enum HttpRequestType
     {
-        GET,
-        POST,
-        DELETE,
-        PUT
+        Get,
+        Post,
+        Delete,
+        Put
     }
 
     private static async Task<ResponseType> HttpCaller(HttpRequestType request, string url, string? body = null)
@@ -120,25 +141,31 @@ class Program
             HttpResponseMessage? response = null;
             switch (request)
             {
-                case HttpRequestType.GET:
+                case HttpRequestType.Get:
                     Console.WriteLine("HttpRequest: GET");
                     response = await httpClient.GetAsync(url);
                     break;
-                case HttpRequestType.POST:
+                case HttpRequestType.Post:
                     Console.WriteLine("HttpRequest: POST");
                     if (body != null)
                     {
-                        var content = new StringContent(body, Encoding.UTF8, "application/json");
-                        response = await httpClient.PostAsync(url, content);
+                        var postContent = new StringContent(body, Encoding.UTF8, "application/json");
+                        response = await httpClient.PostAsync(url, postContent);
                     }
 
                     break;
-                case HttpRequestType.DELETE:
+                case HttpRequestType.Delete:
                     Console.WriteLine("HttpRequest: DELETE");
                     response = await httpClient.DeleteAsync(url);
                     break;
-                case HttpRequestType.PUT:
-                    //TODO
+                case HttpRequestType.Put:
+                    Console.WriteLine("HttpRequest: PUT");
+                    if (body != null)
+                    {
+                        var putContent = new StringContent(body, Encoding.UTF8, "application/json");
+                        response = await httpClient.PutAsync(url, putContent);
+                    }
+
                     break;
             }
 
