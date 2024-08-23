@@ -35,13 +35,4 @@ public class ResponseType
     {
         return r.IsError;
     }
-
-
-    public void PrintException()
-    {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine("An exception occurred during a HTTP Request:");
-        Console.ResetColor();
-        Console.WriteLine(ErrorMessage);
-    }
 }
