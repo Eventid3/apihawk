@@ -3,32 +3,29 @@ namespace API_Tester;
 public class ResponseHandler
 {
     private bool Verbose { get; set; }
-    private string? ToFile { get; set; }
 
-    public ResponseHandler(bool verbose, string? toFile)
+    private IResponsePrinter _printer;
+
+    public ResponseHandler(bool verbose, IResponsePrinter printer)
     {
         Verbose = verbose;
-        ToFile = toFile;
+        _printer = printer;
     }
 
     public void HandleResponse(ResponseType response)
     {
-        if (Verbose)
-        {
-            Console.WriteLine("TODO: Verbose option on.");
-        }
-
-        if (ToFile != "")
-        {
-            Console.WriteLine("TODO: Printing to log file...");
-        }
         if (response)
         {
-            response.Print();
+            if (Verbose)
+            {
+                _printer.PrintHeaders(response);
+            }
+
+            _printer.PrintStandard(response);
         }
         else
         {
-            response.PrintException();
+            _printer.PrintException(response);
         }
     }
 }

@@ -23,18 +23,16 @@ public class HttpHandler
     public async Task<ResponseType> Call(HttpRequestType request, string url, string? body = null)
     {
         var httpClient = new HttpClient();
+        HttpResponseMessage? response = null;
 
         try
         {
-            HttpResponseMessage? response = null;
             switch (request)
             {
                 case HttpRequestType.Get:
-                    Console.WriteLine("HttpRequest: GET");
                     response = await httpClient.GetAsync(url);
                     break;
                 case HttpRequestType.Post:
-                    Console.WriteLine("HttpRequest: POST");
                     if (body != null)
                     {
                         var postContent = new StringContent(body, Encoding.UTF8, "application/json");
@@ -43,11 +41,9 @@ public class HttpHandler
 
                     break;
                 case HttpRequestType.Delete:
-                    Console.WriteLine("HttpRequest: DELETE");
                     response = await httpClient.DeleteAsync(url);
                     break;
                 case HttpRequestType.Put:
-                    Console.WriteLine("HttpRequest: PUT");
                     if (body != null)
                     {
                         var putContent = new StringContent(body, Encoding.UTF8, "application/json");
@@ -59,17 +55,25 @@ public class HttpHandler
 
             if (response != null)
             {
-                Console.WriteLine("Response wasn't null");
                 var statusCode = (int)response.StatusCode;
+                var headers = response.Headers.ToString();
                 var responseBody = await response.Content.ReadAsStringAsync();
                 try
                 {
                     var json = JsonObject.Parse(responseBody);
-                    return new ResponseType(statusCode, json);
+                    return new ResponseType(
+                        statusCode: statusCode,
+                        jsonResponse: json,
+                        stringResponse: null,
+                        headers: headers);
                 }
                 catch
                 {
-                    return new ResponseType(statusCode, null, responseBody);
+                    return new ResponseType(
+                        statusCode: statusCode,
+                        jsonResponse: null,
+                        stringResponse: responseBody,
+                        headers: headers);
                 }
             }
 

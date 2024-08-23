@@ -46,8 +46,13 @@ public class CLIHandler
             // Console.WriteLine(e.Message);
         }
 
+        IResponsePrinter printer = string.IsNullOrWhiteSpace(logFile)
+            ? new ConsoleResponsePrinter()
+            : new FileResponsePrinter();
+
+        printer.FilePath = logFile;
+        _responseHandler = new ResponseHandler(verboseResult, printer);
         _httpHandler = new HttpHandler();
-        _responseHandler = new ResponseHandler(verboseResult, logFile);
 
         Args = args;
     }
@@ -160,18 +165,6 @@ public class CLIHandler
         _mainUrl = new Argument<string>(
             name: "url",
             description: "The URL for the get command");
-    }
-
-    private void HandleResponse(ResponseType response)
-    {
-        if (response)
-        {
-            response.Print();
-        }
-        else
-        {
-            response.PrintException();
-        }
     }
 
     public async Task<int> Initiate()
