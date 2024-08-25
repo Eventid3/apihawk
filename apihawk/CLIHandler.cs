@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.Diagnostics;
 using System.Xml.XPath;
+using Newtonsoft.Json;
 
 namespace API_Tester;
 
@@ -12,9 +13,11 @@ public class CLIHandler
     private Command? _postCommand;
     private Command? _deleteCommand;
     private Command? _putCommand;
+    private Command? _batchCommand;
 
     // --- Arguments ---
     private Argument<string>? _mainUrl;
+    private Argument<string>? _batchFile;
 
     // --- Options ---
     private Option<string>? _bodyOption;
@@ -23,7 +26,7 @@ public class CLIHandler
 
     // --- Composition elements ---
     private readonly HttpHandler _httpHandler;
-    private ResponseHandler _responseHandler;
+    private readonly ResponseHandler _responseHandler;
 
     private string[] Args { get; set; }
 
@@ -37,6 +40,7 @@ public class CLIHandler
 
         bool verboseResult = parseResult?.GetValueForOption(_verboseOption) ?? false;
         string? logFile = string.Empty;
+
         try
         {
             logFile = parseResult?.GetValueForOption(_toFileOption!);
@@ -70,7 +74,7 @@ public class CLIHandler
 
         _getCommand.SetHandler(async (url) =>
             {
-                var response = await _httpHandler.Call(HttpRequestType.Get, url);
+                var response = await _httpHandler.Request(new HttpRequest(HttpRequestType.Get, url));
                 _responseHandler.HandleResponse(response);
             },
             symbol: _mainUrl
@@ -89,8 +93,7 @@ public class CLIHandler
 
         _postCommand.SetHandler(async (url, body) =>
             {
-                var response = await _httpHandler.Call(HttpRequestType.Post, url, body);
-
+                var response = await _httpHandler.Request(new HttpRequest(HttpRequestType.Post, url, body));
                 _responseHandler.HandleResponse(response);
             },
             symbol1: _mainUrl,
@@ -109,7 +112,7 @@ public class CLIHandler
 
         _deleteCommand.SetHandler(async (url) =>
             {
-                var response = await _httpHandler.Call(HttpRequestType.Delete, url);
+                var response = await _httpHandler.Request(new HttpRequest(HttpRequestType.Delete, url));
                 _responseHandler.HandleResponse(response);
             },
             symbol: _mainUrl
@@ -126,19 +129,63 @@ public class CLIHandler
         _putCommand.Add(_bodyOption);
         _putCommand.SetHandler(async (url, body) =>
             {
-                var response = await _httpHandler.Call(HttpRequestType.Put, url, body);
+                var response = await _httpHandler.Request(new HttpRequest(HttpRequestType.Put, url, body));
 
                 _responseHandler.HandleResponse(response);
             },
             symbol1: _mainUrl,
             symbol2: _bodyOption
         );
+
+        // ------ BATCH COMMAND ------
+        _batchCommand = new Command(
+            name: "batch",
+            description: "Makes a batch request described in the given json file");
+
+        Debug.Assert(_batchFile != null, nameof(_batchFile) + " != null");
+        _batchCommand.Add(_batchFile);
+
+        _batchCommand.SetHandler(async (file) =>
+            {
+                using StreamReader sr = new StreamReader(file);
+                string json = await sr.ReadToEndAsync();
+                List<BatchItem>? batchItems = JsonConvert.DeserializeObject<List<BatchItem>>(json);
+                var index = 1;
+                if (batchItems != null)
+                {
+                    foreach (BatchItem batchItem in batchItems)
+                    {
+                        Console.WriteLine($"Performing request {index} out of {batchItems.Count}.");
+                        index += 1;
+
+                        ResponseType response;
+                        switch (batchItem.Type)
+                        {
+                            case HttpRequestType.Get:
+                                response = await _httpHandler.Request(new HttpRequest(batchItem.Type, batchItem.Url));
+                                break;
+                            case HttpRequestType.Post:
+                            case HttpRequestType.Delete:
+                            case HttpRequestType.Put:
+                                response = await _httpHandler.Request(new HttpRequest(batchItem.Type, batchItem.Url, batchItem.Body));
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
+                        _responseHandler.HandleResponse(response);
+                    }
+                }
+            },
+            symbol: _batchFile);
+
         // ------ ROOT COMMAND ------
         _rootCommand = new RootCommand("An API Tool for testing API's in development");
         _rootCommand.Add(_getCommand);
         _rootCommand.Add(_postCommand);
         _rootCommand.Add(_deleteCommand);
         _rootCommand.Add(_putCommand);
+        _rootCommand.Add(_batchCommand);
         _rootCommand.AddGlobalOption(_verboseOption);
         _rootCommand.AddGlobalOption(_toFileOption);
     }
@@ -156,8 +203,7 @@ public class CLIHandler
 
         _toFileOption = new Option<string>(
             name: "--log-file",
-            description: "Sends the output to a file instead of the console.",
-            getDefaultValue: () => "");
+            description: "Sends the output to a file instead of the console.");
     }
 
     private void SetupArguments()
@@ -165,6 +211,10 @@ public class CLIHandler
         _mainUrl = new Argument<string>(
             name: "url",
             description: "The URL for the get command");
+
+        _batchFile = new Argument<string>(
+            name: "batch file",
+            description: "File with the described http requests in JSON format");
     }
 
     public async Task<int> Initiate()

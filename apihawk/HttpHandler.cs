@@ -11,6 +11,22 @@ public enum HttpRequestType
     Put
 }
 
+
+public class HttpRequest
+{
+    public HttpRequest(HttpRequestType type, string url, string? body = null)
+    {
+        Type = type;
+        Url = url;
+        Body = body;
+    }
+
+    public HttpRequestType Type { get; set; }
+    public string Url { get; set; }
+    public string? Body { get; set; }
+}
+
+
 public class HttpHandler
 {
     private HttpClient _httpClient;
@@ -20,36 +36,34 @@ public class HttpHandler
         _httpClient = new HttpClient();
     }
 
-    public async Task<ResponseType> Call(HttpRequestType request, string url, string? body = null)
+    public async Task<ResponseType> Request(HttpRequest request)
     {
         var httpClient = new HttpClient();
         HttpResponseMessage? response = null;
 
         try
         {
-            switch (request)
+            switch (request.Type)
             {
                 case HttpRequestType.Get:
-                    response = await httpClient.GetAsync(url);
+                    response = await httpClient.GetAsync(request.Url);
                     break;
                 case HttpRequestType.Post:
-                    if (body != null)
+                    if (request.Body != null)
                     {
-                        var postContent = new StringContent(body, Encoding.UTF8, "application/json");
-                        response = await httpClient.PostAsync(url, postContent);
+                        var postContent = new StringContent(request.Body, Encoding.UTF8, "application/json");
+                        response = await httpClient.PostAsync(request.Url, postContent);
                     }
-
                     break;
                 case HttpRequestType.Delete:
-                    response = await httpClient.DeleteAsync(url);
+                    response = await httpClient.DeleteAsync(request.Url);
                     break;
                 case HttpRequestType.Put:
-                    if (body != null)
+                    if (request.Body != null)
                     {
-                        var putContent = new StringContent(body, Encoding.UTF8, "application/json");
-                        response = await httpClient.PutAsync(url, putContent);
+                        var putContent = new StringContent(request.Body, Encoding.UTF8, "application/json");
+                        response = await httpClient.PutAsync(request.Url, putContent);
                     }
-
                     break;
             }
 
@@ -84,4 +98,12 @@ public class HttpHandler
             return new ResponseType(e.Message);
         }
     }
+    //
+    // public async IAsyncEnumerable<Task<ResponseType>> BatchRequest(List<HttpRequest> requests)
+    // {
+    //     foreach (var request in requests)
+    //     {
+    //         yield return Request(request);
+    //     }
+    // }
 }
