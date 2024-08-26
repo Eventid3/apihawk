@@ -11,7 +11,6 @@ public enum HttpRequestType
     Put
 }
 
-
 public class HttpRequest
 {
     public HttpRequest(HttpRequestType type, string url, string? body = null)
@@ -26,10 +25,9 @@ public class HttpRequest
     public string? Body { get; set; }
 }
 
-
 public class HttpHandler
 {
-    private HttpClient _httpClient;
+    private readonly HttpClient _httpClient;
 
     public HttpHandler()
     {
@@ -98,12 +96,4 @@ public class HttpHandler
             return new ResponseType(e.Message);
         }
     }
-    //
-    // public async IAsyncEnumerable<Task<ResponseType>> BatchRequest(List<HttpRequest> requests)
-    // {
-    //     foreach (var request in requests)
-    //     {
-    //         yield return Request(request);
-    //     }
-    // }
 }
