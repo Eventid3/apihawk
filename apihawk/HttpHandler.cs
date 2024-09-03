@@ -8,7 +8,8 @@ public enum HttpRequestType
     Get,
     Post,
     Delete,
-    Put
+    Put,
+    Patch
 }
 
 public class HttpRequest

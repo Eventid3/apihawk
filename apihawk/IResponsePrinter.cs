@@ -5,7 +5,6 @@ namespace API_Tester;
 
 public interface IResponsePrinter
 {
-    string? FilePath { get; set; }
     void PrintStandard(ResponseType response);
     void PrintHeaders(ResponseType response);
     void PrintException(ResponseType response);
@@ -13,8 +12,6 @@ public interface IResponsePrinter
 
 public class ConsoleResponsePrinter : IResponsePrinter
 {
-    public string? FilePath { get; set; }
-
     public void PrintStandard(ResponseType response)
     {
         switch (response.StatusCode)
@@ -72,10 +69,15 @@ public class ConsoleResponsePrinter : IResponsePrinter
     }
 }
 
-public class FileResponsePrinter() : IResponsePrinter
+public class FileResponsePrinter : IResponsePrinter
 {
     public string? FilePath { get; set; }
     private bool _initialWrite = true;
+
+    public FileResponsePrinter(string? filePath)
+    {
+        FilePath = filePath;
+    }
 
     public void PrintStandard(ResponseType response)
     {

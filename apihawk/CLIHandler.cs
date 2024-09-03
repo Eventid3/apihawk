@@ -13,6 +13,7 @@ public class CLIHandler
     private Command? _postCommand;
     private Command? _deleteCommand;
     private Command? _putCommand;
+    private Command? _patchCommand;
     private Command? _batchCommand;
 
     // --- Arguments ---
@@ -52,9 +53,8 @@ public class CLIHandler
 
         IResponsePrinter printer = string.IsNullOrWhiteSpace(logFile)
             ? new ConsoleResponsePrinter()
-            : new FileResponsePrinter();
+            : new FileResponsePrinter(logFile);
 
-        printer.FilePath = logFile;
         _responseHandler = new ResponseHandler(verboseResult, printer);
         _httpHandler = new HttpHandler();
 
@@ -133,6 +133,23 @@ public class CLIHandler
 
                 _responseHandler.HandleResponse(response);
             },
+            symbol1: _mainUrl,
+            symbol2: _bodyOption
+        );
+
+        // ------- PATCH COMMAND ------
+        _patchCommand = new Command(
+            name: "patch",
+            description: "Sends a HTTP PATCH request to the given URL.");
+
+        _patchCommand.Add(_mainUrl);
+        _patchCommand.Add(_bodyOption);
+        _patchCommand.SetHandler(async (url, body) =>
+        {
+            var response = await _httpHandler.Request(new HttpRequest(HttpRequestType.Patch, url, body));
+            _responseHandler.HandleResponse(response);
+
+        },
             symbol1: _mainUrl,
             symbol2: _bodyOption
         );

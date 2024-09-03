@@ -18,6 +18,9 @@ public class BatchItem
             case "delete":
                 Type = HttpRequestType.Delete;
                 break;
+            case "patch":
+                Type = HttpRequestType.Patch;
+                break;
         }
 
         Options = options;
