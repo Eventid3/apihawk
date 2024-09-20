@@ -1,4 +1,5 @@
-namespace API_Tester;
+
+namespace ApiHawk.Core;
 
 public class ResponseHandler
 {

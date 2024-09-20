@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 
-namespace API_Tester;
+namespace ApiHawk.Core;
 
 public class ResponseType
 {

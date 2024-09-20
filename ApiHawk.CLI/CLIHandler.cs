@@ -1,9 +1,10 @@
 using System.CommandLine;
 using System.Diagnostics;
 using System.Xml.XPath;
+using ApiHawk.Core;
 using Newtonsoft.Json;
 
-namespace API_Tester;
+namespace ApiHawk.CLI;
 
 public class CLIHandler
 {

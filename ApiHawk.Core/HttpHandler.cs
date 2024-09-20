@@ -1,16 +1,7 @@
 using System.Text;
 using System.Text.Json.Nodes;
 
-namespace API_Tester;
-
-public enum HttpRequestType
-{
-    Get,
-    Post,
-    Delete,
-    Put,
-    Patch
-}
+namespace ApiHawk.Core;
 
 public class HttpRequest
 {

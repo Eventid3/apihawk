@@ -1,4 +1,4 @@
-namespace apihawk_unittest;
+namespace ApiHawk.Tests;
 
 public class Tests
 {

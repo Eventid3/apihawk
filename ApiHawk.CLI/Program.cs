@@ -1,4 +1,4 @@
-﻿using API_Tester;
+﻿using ApiHawk.CLI;
 
 class Program
 {
