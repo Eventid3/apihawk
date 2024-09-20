@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiHawk.Tests", "ApiHawk.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiHawk.Core", "ApiHawk.Core\ApiHawk.Core.csproj", "{38910220-64BA-4A7A-829C-61193EAAC6DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiHawk.Desktop", "ApiHawk.Desktop\ApiHawk.Desktop.csproj", "{4437968A-885A-40D1-BE37-88BC20F026AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{38910220-64BA-4A7A-829C-61193EAAC6DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38910220-64BA-4A7A-829C-61193EAAC6DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38910220-64BA-4A7A-829C-61193EAAC6DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4437968A-885A-40D1-BE37-88BC20F026AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4437968A-885A-40D1-BE37-88BC20F026AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4437968A-885A-40D1-BE37-88BC20F026AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4437968A-885A-40D1-BE37-88BC20F026AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
