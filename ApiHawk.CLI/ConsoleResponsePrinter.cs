@@ -1,4 +1,6 @@
-namespace ApiHawk.Core;
+using ApiHawk.Core;
+
+namespace ApiHawk.CLI;
 
 public class ConsoleResponsePrinter : IResponsePrinter
 {

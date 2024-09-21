@@ -4,29 +4,107 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ApiHawk.Desktop.MainPage">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
+    <VerticalStackLayout
+        Padding="30,0"
+        Spacing="25">
 
-            <Label
-                Text="Welcome to ApiHawk!"
-                FontSize="Title"
-                TextColor="{DynamicResource PrimaryColor}"
-                HorizontalOptions="Center" />
+        <Label
+            Text="ApiHawk 🦅"
+            FontSize="Title"
+            TextColor="{DynamicResource PrimaryColor}"
+            HorizontalOptions="Center" />
+        <FlexLayout
+            HorizontalOptions="Center"
+            VerticalOptions="Fill"
+            Direction="Row"
+            JustifyContent="SpaceEvenly">
+
+            <HorizontalStackLayout>
+                <Label
+                    VerticalTextAlignment="Center"
+                    Text="Request type"
+                    FontSize="16"
+                    Margin="10" />
+                <Picker
+                    x:Name="RequestTypePicker"
+                    WidthRequest="150"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill"
+                    SelectedIndex="0" />
+            </HorizontalStackLayout>
+
+            <HorizontalStackLayout>
+                <Label
+                    Text="Url:"
+                    VerticalTextAlignment="Center"
+                    FontSize="16"
+                    Margin="10" />
+                <Entry
+                    x:Name="UrlEntry"
+                    HeightRequest="50"
+                    WidthRequest="300" />
+            </HorizontalStackLayout>
+
             <Button
-                x:Name="GetButton"
+                x:Name="GoButton"
                 WidthRequest="100"
                 HeightRequest="50"
-                Text="Get"
-                Clicked="GetButton_OnClicked"/>
-            <Label
-                Text="Response:"/>
-            <Label
-                x:Name="ResponseLabel"
-                WidthRequest="300"
-                HeightRequest="500"/>
-        </VerticalStackLayout>
-    </ScrollView>
+                Text="Go"
+                FontSize="16"
+                Clicked="GoButton_OnClicked" />
+            <Button
+                x:Name="ClearButton"
+                WidthRequest="200"
+                HeightRequest="50"
+                Text="Clear output view"
+                FontSize="16"
+                Clicked="ClearButton_OnClicked" />
+
+        </FlexLayout>
+        <Label
+            FontSize="18"
+            Text="Request body:" />
+        <Border
+            Stroke="White"
+            BackgroundColor="Black"
+            Padding="10"
+            HeightRequest="200"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill">
+            <Editor
+                x:Name="RequestBodyEditor"
+                FontFamily="Courier New"
+                FontSize="16"
+                HorizontalTextAlignment="Start"
+                VerticalTextAlignment="Start"
+                VerticalOptions="Fill"
+                HorizontalOptions="Fill"
+                IsSpellCheckEnabled="False"
+                IsTextPredictionEnabled="False"
+                Keyboard="Chat"/>
+        </Border>
+        <Label
+            FontSize="18"
+            Text="Response:" />
+        <Border
+            Stroke="White"
+            BackgroundColor="Black"
+            Padding="10"
+            HeightRequest="500"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill">
+            <ScrollView
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+                <Label
+                    x:Name="ResponseLabel"
+                    FontFamily="Courier New"
+                    FontSize="16"
+                    TextColor="White"
+                    VerticalOptions="Fill"
+                    HorizontalOptions="Fill" />
+            </ScrollView>
+        </Border>
+    </VerticalStackLayout>
 
 </ContentPage>

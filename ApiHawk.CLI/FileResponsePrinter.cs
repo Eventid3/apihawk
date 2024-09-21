@@ -1,6 +1,7 @@
 using System.Diagnostics;
+using ApiHawk.Core;
 
-namespace ApiHawk.Core;
+namespace ApiHawk.CLI;
 
 public class FileResponsePrinter : IResponsePrinter
 {
